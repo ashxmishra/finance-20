@@ -36,11 +36,11 @@ export default function Dashboard() {
         <MetricCard title="Reminders" value={totals.reminders} accent="amber" />
       </div>
       <div className="grid gap-6 mt-6 md:grid-cols-2">
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h2 className="font-semibold mb-2">Expenses by Category</h2>
           <PieChart data={pieData} />
         </div>
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h2 className="font-semibold mb-2">Income vs Expenses</h2>
           <BarChart data={barData} />
         </div>
