@@ -8,6 +8,7 @@ const navItems = [
   { to: "/expenses", label: "Expenses" },
   { to: "/savings-reminders", label: "Savings & Reminders" },
   { to: "/tax", label: "ITR/GST" },
+  { to: "/profile", label: "Profile" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
