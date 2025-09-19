@@ -16,24 +16,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/40">
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="font-extrabold text-xl tracking-tight">
-            <span className="text-primary">Fin</span>Track
+          <Link to="/" className="flex items-center gap-2 font-extrabold text-xl tracking-tight">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-accent text-primary-foreground">₹</span>
+            <span><span className="text-primary">Fin</span>Track</span>
           </Link>
-          <nav className="hidden md:flex gap-6 text-sm">
+          <nav className="hidden md:flex gap-2 text-sm">
             {navItems.map((n) => (
-              <NavLink key={n.to} to={n.to} className={({ isActive }) => cn("hover:text-primary transition-colors", isActive && "text-primary font-semibold")}>{n.label}</NavLink>
+              <NavLink key={n.to} to={n.to} className={({ isActive }) => cn("px-3 py-1.5 rounded-md transition-all", isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted")}>{n.label}</NavLink>
             ))}
           </nav>
           <div className="flex items-center gap-3">
             {user ? (
               <>
                 <span className="hidden sm:block text-sm text-muted-foreground">{user.email}</span>
-                <button onClick={signOut} className="px-3 py-1.5 rounded-md bg-secondary hover:bg-secondary/80 text-foreground text-sm">Sign out</button>
+                <button onClick={signOut} className="px-3 py-1.5 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm shadow hover:opacity-95">Sign out</button>
               </>
             ) : isGuest ? (
-              <button onClick={signOut} className="px-3 py-1.5 rounded-md bg-secondary hover:bg-secondary/80 text-foreground text-sm">Exit guest</button>
+              <button onClick={signOut} className="px-3 py-1.5 rounded-md border text-sm hover:bg-muted">Exit guest</button>
             ) : (
-              <Link to="/login" className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm hover:opacity-90">Login</Link>
+              <Link to="/login" className="px-3 py-1.5 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm shadow hover:opacity-95">Login</Link>
             )}
           </div>
         </div>
