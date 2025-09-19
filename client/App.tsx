@@ -14,6 +14,7 @@ import Income from "./pages/Income";
 import Expenses from "./pages/Expenses";
 import SavingsReminders from "./pages/SavingsReminders";
 import Tax from "./pages/Tax";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { FinanceProvider } from "./context/FinanceContext";
