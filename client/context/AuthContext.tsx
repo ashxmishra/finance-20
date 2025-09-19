@@ -52,7 +52,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signInWithGoogle: async () => {
       const svc = ensureFirebase();
       if (!svc) throw new Error("Firebase not configured");
-      await svc.auth.signInWithPopup ? svc.auth.signInWithPopup(svc.provider) : (await import("firebase/auth")).signInWithPopup(svc.auth, svc.provider);
+      const { signInWithPopup } = await import("firebase/auth");
+      await signInWithPopup(svc.auth, svc.provider);
     },
     signOut: async () => {
       const svc = ensureFirebase();
@@ -61,7 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         return;
       }
-      await svc.auth.signOut();
+      const { signOut } = await import("firebase/auth");
+      await signOut(svc.auth);
       setGuest(false);
       setUser(null);
     },
