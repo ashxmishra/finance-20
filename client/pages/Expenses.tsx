@@ -43,8 +43,8 @@ export default function Expenses() {
                 <div className="font-medium">{i.category}</div>
                 <div className="text-sm text-muted-foreground">{i.date} • ₹{i.amount.toLocaleString()}</div>
               </div>
-              <div className="flex items-center gap-3">
-                {i.receiptUrl && <a href={i.receiptUrl} target="_blank" className="text-sm underline">Receipt</a>}
+              <div className="flex items-center gap-3 shrink-0">
+                {i.receiptUrl && <a href={i.receiptUrl} target="_blank" className="text-sm underline text-blue-600 dark:text-blue-400 hover:opacity-80">Receipt</a>}
                 {i.id && <button onClick={()=>deleteExpense(i.id!)} className="text-sm text-rose-600 hover:underline">Delete</button>}
               </div>
             </div>
