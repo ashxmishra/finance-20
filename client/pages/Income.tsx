@@ -43,8 +43,8 @@ export default function Income() {
                 <div className="font-medium">{i.source}</div>
                 <div className="text-sm text-muted-foreground">{i.date} • ₹{i.amount.toLocaleString()}</div>
               </div>
-              <div className="flex items-center gap-3">
-                {i.invoiceUrl && <a href={i.invoiceUrl} target="_blank" className="text-sm underline">Invoice</a>}
+              <div className="flex items-center gap-3 shrink-0">
+                {i.invoiceUrl && <a href={i.invoiceUrl} target="_blank" className="text-sm underline text-blue-600 dark:text-blue-400 hover:opacity-80">Invoice</a>}
                 {i.id && <button onClick={()=>deleteIncome(i.id!)} className="text-sm text-rose-600 hover:underline">Delete</button>}
               </div>
             </div>
