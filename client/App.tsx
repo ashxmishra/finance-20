@@ -16,12 +16,14 @@ import SavingsReminders from "./pages/SavingsReminders";
 import Tax from "./pages/Tax";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { FinanceProvider } from "./context/FinanceContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <AuthProvider>
-    <QueryClientProvider client={queryClient}>
+    <FinanceProvider>
+      <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -39,7 +41,8 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </FinanceProvider>
   </AuthProvider>
 );
 

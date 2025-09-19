@@ -3,17 +3,11 @@ import MetricCard from "@/components/MetricCard";
 import { PieChart, BarChart } from "@/components/charts/Charts";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { ensureFirebase, isFirebaseEnabled } from "@/lib/firebase";
-
-interface Income { amount: number; source: string; date: string; invoiceUrl?: string }
-interface Expense { amount: number; category: string; date: string; receiptUrl?: string }
-interface Reminder { title: string; dueDate: string; amount?: number }
+import { useFinance } from "@/context/FinanceContext";
 
 export default function Dashboard() {
-  const { user, isGuest } = useAuth();
-  const [incomes, setIncomes] = useState<Income[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const { user } = useAuth();
+  const { incomes, expenses, reminders } = useFinance();
 
   useEffect(() => {
     let cancelled = false;
