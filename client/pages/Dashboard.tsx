@@ -1,7 +1,7 @@
 import AppLayout from "@/components/layout/AppLayout";
 import MetricCard from "@/components/MetricCard";
 import { PieChart, BarChart } from "@/components/charts/Charts";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useFinance } from "@/context/FinanceContext";
 
