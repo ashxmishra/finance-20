@@ -13,37 +13,39 @@ export default function Expenses() {
     <AppLayout>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold">Expenses</h1>
-        <form className="mt-4 grid gap-3 md:grid-cols-4 items-end" onSubmit={async (e) => { e.preventDefault(); if (!category || !amount) return; await addExpense({ category, amount: Number(amount), date }, file); setCategory(""); setAmount(""); setFile(null); }}>
-          <div className="md:col-span-1">
-            <label className="text-sm">Date</label>
-            <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="text-sm">Category</label>
-            <input value={category} onChange={(e)=>setCategory(e.target.value)} placeholder="Rent / Food / Transport" className="w-full mt-1 border rounded-md px-2 py-2 bg-background" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="text-sm">Amount (₹)</label>
-            <input type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="text-sm">Receipt</label>
-            <input type="file" onChange={(e)=>setFile(e.target.files?.[0] || null)} className="w-full mt-1" />
-          </div>
-          <div className="md:col-span-4">
-            <button className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Add Expense</button>
-          </div>
-        </form>
+        <div className="mt-4 rounded-xl border bg-card p-5 shadow-sm">
+          <form className="grid gap-3 md:grid-cols-4 items-end" onSubmit={async (e) => { e.preventDefault(); if (!category || !amount) return; await addExpense({ category, amount: Number(amount), date }, file); setCategory(""); setAmount(""); setFile(null); }}>
+            <div className="md:col-span-1">
+              <label className="text-sm">Date</label>
+              <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="text-sm">Category</label>
+              <input value={category} onChange={(e)=>setCategory(e.target.value)} placeholder="Rent / Food / Transport" className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="text-sm">Amount (₹)</label>
+              <input type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="text-sm">Receipt</label>
+              <input type="file" onChange={(e)=>setFile(e.target.files?.[0] || null)} className="w-full mt-1" />
+            </div>
+            <div className="md:col-span-4">
+              <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">Add Expense</button>
+            </div>
+          </form>
+        </div>
         <div className="mt-6 space-y-2">
           {expenses.map((i) => (
-            <div key={(i.id||i.date)+i.category+i.amount} className="flex items-center justify-between border rounded-lg p-3 bg-card">
+            <div key={(i.id||i.date)+i.category+i.amount} className="flex items-center justify-between border rounded-lg p-3 bg-card shadow-sm hover:shadow-md transition-shadow">
               <div>
                 <div className="font-medium">{i.category}</div>
                 <div className="text-sm text-muted-foreground">{i.date} • ₹{i.amount.toLocaleString()}</div>
               </div>
               <div className="flex items-center gap-3">
                 {i.receiptUrl && <a href={i.receiptUrl} target="_blank" className="text-sm underline">Receipt</a>}
-                {i.id && <button onClick={()=>deleteExpense(i.id!)} className="text-sm text-rose-600">Delete</button>}
+                {i.id && <button onClick={()=>deleteExpense(i.id!)} className="text-sm text-rose-600 hover:underline">Delete</button>}
               </div>
             </div>
           ))}
