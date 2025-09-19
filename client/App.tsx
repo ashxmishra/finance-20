@@ -90,4 +90,26 @@ const App = () => (
   </AuthProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+const container = document.getElementById("root");
+if (!container) throw new Error('Root container missing');
+
+const _win = window as any;
+let _root = _win.__fintrack_root;
+if (!_root) {
+  _root = createRoot(container);
+  _win.__fintrack_root = _root;
+}
+
+_root.render(<App />);
+
+if (import.meta.hot) {
+  import.meta.hot.accept();
+  import.meta.hot.dispose(() => {
+    try {
+      _root.unmount();
+      delete _win.__fintrack_root;
+    } catch (e) {
+      // ignore
+    }
+  });
+}
