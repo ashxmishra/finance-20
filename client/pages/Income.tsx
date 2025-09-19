@@ -1,6 +1,7 @@
 import AppLayout from "@/components/layout/AppLayout";
 import { useFinance } from "@/context/FinanceContext";
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 export default function Income() {
   const { incomes, addIncome, deleteIncome } = useFinance();
@@ -45,7 +46,12 @@ export default function Income() {
               </div>
               <div className="flex items-center gap-3 shrink-0">
                 {i.invoiceUrl && <a href={i.invoiceUrl} target="_blank" className="text-sm underline text-blue-600 dark:text-blue-400 hover:opacity-80">Invoice</a>}
-                {i.id && <button onClick={()=>deleteIncome(i.id!)} className="text-sm text-rose-600 hover:underline">Delete</button>}
+                {i.id && (
+                  <button onClick={()=>deleteIncome(i.id!)} className="p-2 rounded-md hover:bg-rose-50 text-rose-600" aria-label="Delete income">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}
