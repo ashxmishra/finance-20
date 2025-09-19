@@ -29,9 +29,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       return;
     }
-    const unsub = svc.auth.onAuthStateChanged((u) => {
-      setUser(u);
-      setLoading(false);
+    let unsub = () => {};
+    import("firebase/auth").then(({ onAuthStateChanged }) => {
+      unsub = onAuthStateChanged(svc.auth, (u) => {
+        setUser(u);
+        setLoading(false);
+      });
     });
     return () => unsub();
   }, []);
