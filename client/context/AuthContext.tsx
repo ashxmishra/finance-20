@@ -14,7 +14,9 @@ interface AuthCtx {
 
 const Ctx = createContext<AuthCtx | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGuest, setGuest] = useState(false);
@@ -39,35 +41,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsub();
   }, []);
 
-  const value = useMemo<AuthCtx>(() => ({
-    user,
-    loading,
-    firebaseReady: isFirebaseEnabled,
-    isGuest,
-    continueAsGuest: () => {
-      setGuest(true);
-      setUser(null);
-      setLoading(false);
-    },
-    signInWithGoogle: async () => {
-      const svc = ensureFirebase();
-      if (!svc) throw new Error("Firebase not configured");
-      const { signInWithPopup } = await import("firebase/auth");
-      await signInWithPopup(svc.auth, svc.provider);
-    },
-    signOut: async () => {
-      const svc = ensureFirebase();
-      if (!svc) {
+  const value = useMemo<AuthCtx>(
+    () => ({
+      user,
+      loading,
+      firebaseReady: isFirebaseEnabled,
+      isGuest,
+      continueAsGuest: () => {
+        setGuest(true);
+        setUser(null);
+        setLoading(false);
+      },
+      signInWithGoogle: async () => {
+        const svc = ensureFirebase();
+        if (!svc) throw new Error("Firebase not configured");
+        const { signInWithPopup } = await import("firebase/auth");
+        await signInWithPopup(svc.auth, svc.provider);
+      },
+      signOut: async () => {
+        const svc = ensureFirebase();
+        if (!svc) {
+          setGuest(false);
+          setUser(null);
+          return;
+        }
+        const { signOut } = await import("firebase/auth");
+        await signOut(svc.auth);
         setGuest(false);
         setUser(null);
-        return;
-      }
-      const { signOut } = await import("firebase/auth");
-      await signOut(svc.auth);
-      setGuest(false);
-      setUser(null);
-    },
-  }), [user, loading, isGuest]);
+      },
+    }),
+    [user, loading, isGuest],
+  );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };

@@ -7,7 +7,7 @@ export default function Expenses() {
   const { expenses, addExpense, deleteExpense } = useFinance();
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0,10));
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
 
   return (
@@ -15,39 +15,90 @@ export default function Expenses() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold">Expenses</h1>
         <div className="mt-4 rounded-xl border bg-card p-5 shadow-sm">
-          <form className="grid gap-3 md:grid-cols-4 items-end" onSubmit={async (e) => { e.preventDefault(); if (!category || !amount) return; await addExpense({ category, amount: Number(amount), date }, file); setCategory(""); setAmount(""); setFile(null); }}>
+          <form
+            className="grid gap-3 md:grid-cols-4 items-end"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!category || !amount) return;
+              await addExpense(
+                { category, amount: Number(amount), date },
+                file,
+              );
+              setCategory("");
+              setAmount("");
+              setFile(null);
+            }}
+          >
             <div className="md:col-span-1">
               <label className="text-sm">Date</label>
-              <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
             </div>
             <div className="md:col-span-1">
               <label className="text-sm">Category</label>
-              <input value={category} onChange={(e)=>setCategory(e.target.value)} placeholder="Rent / Food / Transport" className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              <input
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="Rent / Food / Transport"
+                className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
             </div>
             <div className="md:col-span-1">
               <label className="text-sm">Amount (₹)</label>
-              <input type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
             </div>
             <div className="md:col-span-1">
               <label className="text-sm">Receipt</label>
-              <input type="file" onChange={(e)=>setFile(e.target.files?.[0] || null)} className="w-full mt-1" />
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="w-full mt-1"
+              />
             </div>
             <div className="md:col-span-4">
-              <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">Add Expense</button>
+              <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
+                Add Expense
+              </button>
             </div>
           </form>
         </div>
         <div className="mt-6 space-y-2">
           {expenses.map((i) => (
-            <div key={(i.id||i.date)+i.category+i.amount} className="flex items-center justify-between border rounded-lg p-3 bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div
+              key={(i.id || i.date) + i.category + i.amount}
+              className="flex items-center justify-between border rounded-lg p-3 bg-card shadow-sm hover:shadow-md transition-shadow"
+            >
               <div>
                 <div className="font-medium">{i.category}</div>
-                <div className="text-sm text-muted-foreground">{i.date} • ₹{i.amount.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground">
+                  {i.date} • ₹{i.amount.toLocaleString()}
+                </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                {i.receiptUrl && <a href={i.receiptUrl} target="_blank" className="text-sm underline text-blue-600 dark:text-blue-400 hover:opacity-80">Receipt</a>}
+                {i.receiptUrl && (
+                  <a
+                    href={i.receiptUrl}
+                    target="_blank"
+                    className="text-sm underline text-blue-600 dark:text-blue-400 hover:opacity-80"
+                  >
+                    Receipt
+                  </a>
+                )}
                 {i.id && (
-                  <button onClick={()=>deleteExpense(i.id!)} className="p-2 rounded-md hover:bg-rose-50 text-rose-600" aria-label="Delete expense">
+                  <button
+                    onClick={() => deleteExpense(i.id!)}
+                    className="p-2 rounded-md hover:bg-rose-50 text-rose-600"
+                    aria-label="Delete expense"
+                  >
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete</span>
                   </button>
@@ -55,7 +106,11 @@ export default function Expenses() {
               </div>
             </div>
           ))}
-          {expenses.length===0 && <div className="text-sm text-muted-foreground">No expenses yet.</div>}
+          {expenses.length === 0 && (
+            <div className="text-sm text-muted-foreground">
+              No expenses yet.
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>

@@ -1,9 +1,12 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { user, loading, isGuest } = useAuth();
-  if (loading) return <div className="h-screen grid place-items-center">Loading...</div>;
+  if (loading)
+    return <div className="h-screen grid place-items-center">Loading...</div>;
   if (!user && !isGuest) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };

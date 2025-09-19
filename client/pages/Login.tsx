@@ -21,15 +21,33 @@ export default function Login() {
     <AppLayout>
       <div className="max-w-md mx-auto text-center">
         <h1 className="text-3xl font-bold">Login to FinTrack</h1>
-        <p className="text-muted-foreground mt-1">Securely access your personalized finance dashboard.</p>
+        <p className="text-muted-foreground mt-1">
+          Securely access your personalized finance dashboard.
+        </p>
         <div className="mt-6 space-y-3">
-          <button onClick={handleLogin} disabled={!firebaseReady} className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground disabled:opacity-50">Continue with Google</button>
+          <button
+            onClick={handleLogin}
+            disabled={!firebaseReady}
+            className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground disabled:opacity-50"
+          >
+            Continue with Google
+          </button>
           {!isFirebaseEnabled && (
             <div className="text-xs text-amber-600 bg-amber-100 border border-amber-200 p-3 rounded-md text-left">
-              Firebase is not configured. You can still explore FinTrack in guest mode. Set VITE_FIREBASE_* env vars to enable authentication and data sync.
+              Firebase is not configured. You can still explore FinTrack in
+              guest mode. Set VITE_FIREBASE_* env vars to enable authentication
+              and data sync.
             </div>
           )}
-          <button onClick={() => { continueAsGuest(); navigate("/dashboard"); }} className="w-full px-4 py-2 rounded-lg border">Continue as Guest</button>
+          <button
+            onClick={() => {
+              continueAsGuest();
+              navigate("/dashboard");
+            }}
+            className="w-full px-4 py-2 rounded-lg border"
+          >
+            Continue as Guest
+          </button>
         </div>
       </div>
     </AppLayout>
