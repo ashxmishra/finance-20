@@ -203,7 +203,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
         createdAt: serverTimestamp(),
       });
     } else {
-      setIncomes((prev) => [{ ...data, id: crypto.randomUUID() }, ...prev]);
+      const invoiceUrl = file ? URL.createObjectURL(file) : data.invoiceUrl;
+      setIncomes((prev) => [{ ...data, invoiceUrl, id: crypto.randomUUID() }, ...prev]);
     }
   }
 
