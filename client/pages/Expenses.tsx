@@ -87,7 +87,7 @@ export default function Expenses() {
                   {i.date} • ₹{i.amount.toLocaleString()}
                 </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {i.receiptUrl && (
                   <a
                     href={i.receiptUrl}
