@@ -76,6 +76,7 @@ export default function Tax() {
       reminders: rem as any,
       savings: sav as any,
       variant,
+      fileNameBase: filename,
     });
   }
 
