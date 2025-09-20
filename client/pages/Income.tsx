@@ -17,14 +17,19 @@ export default function Income() {
         <h1 className="text-2xl font-bold">Income</h1>
         <div className="mt-4 rounded-xl border bg-card p-5 shadow-sm">
           <form
-            className="grid gap-3 md:grid-cols-4 items-end"
+            className="grid gap-3 md:grid-cols-3 items-end"
             onSubmit={async (e) => {
               e.preventDefault();
               if (!source || !amount) return;
-              await addIncome({ source, amount: Number(amount), date }, file);
+              if (editingId) {
+                await updateIncome(editingId, { source, amount: Number(amount), date }, file);
+              } else {
+                await addIncome({ source, amount: Number(amount), date }, file);
+              }
               setSource("");
               setAmount("");
               setFile(null);
+              setEditingId(null);
             }}
           >
             <div className="md:col-span-1">
