@@ -48,6 +48,10 @@ interface FinanceCtx {
   ) => Promise<void>;
   addReminder: (r: Omit<Reminder, "id" | "uid">) => Promise<void>;
   addSaving: (s: Omit<Saving, "id" | "uid">) => Promise<void>;
+  updateIncome: (id: string, i: Omit<Income, "id" | "uid">, file?: File | null) => Promise<void>;
+  updateExpense: (id: string, e: Omit<Expense, "id" | "uid">, file?: File | null) => Promise<void>;
+  updateReminder: (id: string, r: Omit<Reminder, "id" | "uid">) => Promise<void>;
+  updateSaving: (id: string, s: Omit<Saving, "id" | "uid">) => Promise<void>;
   deleteIncome: (id: string) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
   deleteReminder: (id: string) => Promise<void>;
