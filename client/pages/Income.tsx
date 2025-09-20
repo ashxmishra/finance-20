@@ -100,14 +100,20 @@ export default function Income() {
                   </a>
                 )}
                 {i.id && (
-                  <button
-                    onClick={() => deleteIncome(i.id!)}
-                    className="p-2 rounded-md hover:bg-rose-50 text-rose-600"
-                    aria-label="Delete income"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </button>
+                  <>
+                    <button onClick={()=>{ setEditingId(i.id!); setSource(i.source); setAmount(String(i.amount)); setDate(i.date); setFile(null); }} className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" aria-label="Edit income">
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </button>
+                    <button
+                      onClick={() => deleteIncome(i.id!)}
+                      className="p-2 rounded-md hover:bg-rose-50 text-rose-600"
+                      aria-label="Delete income"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
