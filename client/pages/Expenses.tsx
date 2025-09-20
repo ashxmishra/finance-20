@@ -1,7 +1,7 @@
 import AppLayout from "@/components/layout/AppLayout";
 import { useFinance } from "@/context/FinanceContext";
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, X } from "lucide-react";
 
 export default function Expenses() {
   const { expenses, addExpense, deleteExpense } = useFinance();
