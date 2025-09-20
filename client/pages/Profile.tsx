@@ -2,6 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import MetricCard from "@/components/MetricCard";
 import { useAuth } from "@/context/AuthContext";
 import { useFinance } from "@/context/FinanceContext";
+import { useEffect, useState } from "react";
 
 export default function Profile() {
   const { user, isGuest, signOut } = useAuth();
@@ -12,6 +13,40 @@ export default function Profile() {
     0,
   );
   const savingsAmt = totalIncome - totalExpenses;
+
+  const profileKey = `fintrack:profile:${user?.uid || (isGuest ? "guest" : "anon")}`;
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(profileKey);
+    if (raw) {
+      try {
+        const p = JSON.parse(raw);
+        setName(p.name ?? (user?.displayName || ""));
+        setEmail(p.email ?? (user?.email || ""));
+        setAddress(p.address ?? "");
+        setPhone(p.phone ?? "");
+        return;
+      } catch {}
+    }
+    setName(user?.displayName || "");
+    setEmail(user?.email || "");
+    setAddress("");
+    setPhone("");
+  }, [profileKey, user?.displayName, user?.email]);
+
+  function handleSaveProfile() {
+    localStorage.setItem(
+      profileKey,
+      JSON.stringify({ name, email, address, phone })
+    );
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  }
 
   return (
     <AppLayout>
@@ -69,46 +104,57 @@ export default function Profile() {
           />
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 mt-6">
+        <div className="mt-6">
           <div className="rounded-xl border bg-card p-5">
-            <h2 className="font-semibold mb-2">Recent Incomes</h2>
-            <div className="space-y-2">
-              {incomes.slice(0, 5).map((i, idx) => (
-                <div
-                  key={(i.id || idx) + "inc"}
-                  className="flex justify-between text-sm"
-                >
-                  <div className="font-medium">{i.source}</div>
-                  <div className="text-muted-foreground">
-                    {i.date} • ₹{Number(i.amount || 0).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-              {incomes.length === 0 && (
-                <div className="text-sm text-muted-foreground">
-                  No income yet.
-                </div>
-              )}
+            <h2 className="font-semibold mb-4">Profile Details</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="text-sm">Name</label>
+                <input
+                  className="w-full mt-1 border rounded-md px-2 py-2 bg-background"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label className="text-sm">Email</label>
+                <input
+                  type="email"
+                  className="w-full mt-1 border rounded-md px-2 py-2 bg-background"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm">Address</label>
+                <textarea
+                  className="w-full mt-1 border rounded-md px-2 py-2 bg-background min-h-[80px]"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Street, City, State, ZIP"
+                />
+              </div>
+              <div>
+                <label className="text-sm">Phone number</label>
+                <input
+                  className="w-full mt-1 border rounded-md px-2 py-2 bg-background"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                />
+              </div>
             </div>
-          </div>
-          <div className="rounded-xl border bg-card p-5">
-            <h2 className="font-semibold mb-2">Recent Expenses</h2>
-            <div className="space-y-2">
-              {expenses.slice(0, 5).map((e, idx) => (
-                <div
-                  key={(e.id || idx) + "exp"}
-                  className="flex justify-between text-sm"
-                >
-                  <div className="font-medium">{e.category}</div>
-                  <div className="text-muted-foreground">
-                    {e.date} • ₹{Number(e.amount || 0).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-              {expenses.length === 0 && (
-                <div className="text-sm text-muted-foreground">
-                  No expenses yet.
-                </div>
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                onClick={handleSaveProfile}
+                className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow"
+              >
+                Save Profile
+              </button>
+              {saved && (
+                <span className="text-sm text-muted-foreground">Saved</span>
               )}
             </div>
           </div>
