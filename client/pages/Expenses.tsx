@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Trash2, Pencil, X } from "lucide-react";
 
 export default function Expenses() {
-  const { expenses, addExpense, deleteExpense } = useFinance();
+  const { expenses, addExpense, deleteExpense, updateExpense } = useFinance();
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   return (
     <AppLayout>
@@ -16,17 +17,19 @@ export default function Expenses() {
         <h1 className="text-2xl font-bold">Expenses</h1>
         <div className="mt-4 rounded-xl border bg-card p-5 shadow-sm">
           <form
-            className="grid gap-3 md:grid-cols-4 items-end"
+            className="grid gap-3 md:grid-cols-3 items-end"
             onSubmit={async (e) => {
               e.preventDefault();
               if (!category || !amount) return;
-              await addExpense(
-                { category, amount: Number(amount), date },
-                file,
-              );
+              if (editingId) {
+                await updateExpense(editingId, { category, amount: Number(amount), date }, file);
+              } else {
+                await addExpense({ category, amount: Number(amount), date }, file);
+              }
               setCategory("");
               setAmount("");
               setFile(null);
+              setEditingId(null);
             }}
           >
             <div className="md:col-span-1">
@@ -56,7 +59,7 @@ export default function Expenses() {
                 className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
-            <div className="md:col-span-1">
+            <div className="md:col-span-3">
               <label className="text-sm">Receipt</label>
               <input
                 type="file"
@@ -64,10 +67,11 @@ export default function Expenses() {
                 className="w-full mt-1"
               />
             </div>
-            <div className="md:col-span-4">
+            <div className="md:col-span-3 flex items-center gap-3">
               <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
-                Add Expense
+                {editingId ? "Save Expense" : "Add Expense"}
               </button>
+              {editingId && <button type="button" onClick={()=>{ setEditingId(null); setCategory(''); setAmount(''); setFile(null); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>}
             </div>
           </form>
         </div>
@@ -94,14 +98,20 @@ export default function Expenses() {
                   </a>
                 )}
                 {i.id && (
-                  <button
-                    onClick={() => deleteExpense(i.id!)}
-                    className="p-2 rounded-md hover:bg-rose-50 text-rose-600"
-                    aria-label="Delete expense"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </button>
+                  <>
+                    <button onClick={()=>{ setEditingId(i.id!); setCategory(i.category); setAmount(String(i.amount)); setDate(i.date); setFile(null); }} className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" aria-label="Edit expense">
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </button>
+                    <button
+                      onClick={() => deleteExpense(i.id!)}
+                      className="p-2 rounded-md hover:bg-rose-50 text-rose-600"
+                      aria-label="Delete expense"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
