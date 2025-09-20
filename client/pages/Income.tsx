@@ -59,7 +59,7 @@ export default function Income() {
                 className="w-full mt-1 border rounded-md px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
-            <div className="md:col-span-1">
+            <div className="md:col-span-3">
               <label className="text-sm">Invoice</label>
               <input
                 type="file"
@@ -67,10 +67,13 @@ export default function Income() {
                 className="w-full mt-1"
               />
             </div>
-            <div className="md:col-span-4">
+            <div className="md:col-span-3 flex items-center gap-3">
               <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
-                Add Income
+                {editingId ? "Save Income" : "Add Income"}
               </button>
+              {editingId && (
+                <button type="button" onClick={()=>{ setEditingId(null); setSource(""); setAmount(""); setFile(null); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>
+              )}
             </div>
           </form>
         </div>
