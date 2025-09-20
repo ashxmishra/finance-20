@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Trash2, Pencil, X } from "lucide-react";
 
 export default function Income() {
-  const { incomes, addIncome, deleteIncome } = useFinance();
+  const { incomes, addIncome, deleteIncome, updateIncome } = useFinance();
   const [source, setSource] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   return (
     <AppLayout>
