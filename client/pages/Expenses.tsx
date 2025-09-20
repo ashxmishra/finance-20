@@ -22,9 +22,16 @@ export default function Expenses() {
               e.preventDefault();
               if (!category || !amount) return;
               if (editingId) {
-                await updateExpense(editingId, { category, amount: Number(amount), date }, file);
+                await updateExpense(
+                  editingId,
+                  { category, amount: Number(amount), date },
+                  file,
+                );
               } else {
-                await addExpense({ category, amount: Number(amount), date }, file);
+                await addExpense(
+                  { category, amount: Number(amount), date },
+                  file,
+                );
               }
               setCategory("");
               setAmount("");
@@ -71,7 +78,20 @@ export default function Expenses() {
               <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
                 {editingId ? "Save Expense" : "Add Expense"}
               </button>
-              {editingId && <button type="button" onClick={()=>{ setEditingId(null); setCategory(''); setAmount(''); setFile(null); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>}
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    setCategory("");
+                    setAmount("");
+                    setFile(null);
+                  }}
+                  className="px-3 py-2 rounded-md border flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" /> Cancel
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -99,7 +119,17 @@ export default function Expenses() {
                 )}
                 {i.id && (
                   <>
-                    <button onClick={()=>{ setEditingId(i.id!); setCategory(i.category); setAmount(String(i.amount)); setDate(i.date); setFile(null); }} className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" aria-label="Edit expense">
+                    <button
+                      onClick={() => {
+                        setEditingId(i.id!);
+                        setCategory(i.category);
+                        setAmount(String(i.amount));
+                        setDate(i.date);
+                        setFile(null);
+                      }}
+                      className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600"
+                      aria-label="Edit expense"
+                    >
                       <Pencil className="h-4 w-4" />
                       <span className="sr-only">Edit</span>
                     </button>

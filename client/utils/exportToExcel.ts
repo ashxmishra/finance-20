@@ -42,7 +42,11 @@ function addHyperlinks(ws: XLSX.WorkSheet, header: string[]) {
   const range = XLSX.utils.decode_range(ref);
   for (let c = range.s.c; c <= range.e.c; c++) {
     const key = header[c];
-    if (!key || !(key.toLowerCase().includes("url") || key.toLowerCase().includes("link"))) continue;
+    if (
+      !key ||
+      !(key.toLowerCase().includes("url") || key.toLowerCase().includes("link"))
+    )
+      continue;
     const col = colToLetter(c);
     // start from row 2 (index 1) to skip header
     for (let r = range.s.r + 1; r <= range.e.r; r++) {
@@ -66,14 +70,35 @@ export function exportFinanceToExcel(opts: {
   variant: "ITR" | "GST";
   fileNameBase?: string; // optional override without extension
 }) {
-  const { incomes, expenses, reminders = [], savings = [], variant, fileNameBase } = opts;
+  const {
+    incomes,
+    expenses,
+    reminders = [],
+    savings = [],
+    variant,
+    fileNameBase,
+  } = opts;
   const wb = XLSX.utils.book_new();
 
-  const incomeHasUrl = incomes.some((r: any) => typeof r.invoiceUrl !== "undefined");
-  const expenseHasUrl = expenses.some((r: any) => typeof r.receiptUrl !== "undefined");
+  const incomeHasUrl = incomes.some(
+    (r: any) => typeof r.invoiceUrl !== "undefined",
+  );
+  const expenseHasUrl = expenses.some(
+    (r: any) => typeof r.receiptUrl !== "undefined",
+  );
 
-  const incomeHeader: (keyof IncomeRow | "invoiceUrl")[] = ["date", "source", "amount", ...(incomeHasUrl ? ["invoiceUrl"] : [])];
-  const expenseHeader: (keyof ExpenseRow | "receiptUrl")[] = ["date", "category", "amount", ...(expenseHasUrl ? ["receiptUrl"] : [])];
+  const incomeHeader: (keyof IncomeRow | "invoiceUrl")[] = [
+    "date",
+    "source",
+    "amount",
+    ...(incomeHasUrl ? ["invoiceUrl"] : []),
+  ];
+  const expenseHeader: (keyof ExpenseRow | "receiptUrl")[] = [
+    "date",
+    "category",
+    "amount",
+    ...(expenseHasUrl ? ["receiptUrl"] : []),
+  ];
 
   const normalizedIncomes = incomes.map((r) => {
     const base: any = { date: r.date, source: r.source, amount: r.amount };
@@ -86,8 +111,12 @@ export function exportFinanceToExcel(opts: {
     return base;
   });
 
-  const incomeSheet = XLSX.utils.json_to_sheet(normalizedIncomes, { header: incomeHeader as string[] });
-  const expenseSheet = XLSX.utils.json_to_sheet(normalizedExpenses, { header: expenseHeader as string[] });
+  const incomeSheet = XLSX.utils.json_to_sheet(normalizedIncomes, {
+    header: incomeHeader as string[],
+  });
+  const expenseSheet = XLSX.utils.json_to_sheet(normalizedExpenses, {
+    header: expenseHeader as string[],
+  });
 
   addHyperlinks(incomeSheet, incomeHeader as string[]);
   addHyperlinks(expenseSheet, expenseHeader as string[]);
@@ -98,7 +127,11 @@ export function exportFinanceToExcel(opts: {
   if (reminders.length) {
     const remHeader: (keyof ReminderRow)[] = ["title", "dueDate", "amount"];
     const remSheet = XLSX.utils.json_to_sheet(
-      reminders.map((r) => ({ title: r.title, dueDate: r.dueDate, amount: r.amount ?? "" })),
+      reminders.map((r) => ({
+        title: r.title,
+        dueDate: r.dueDate,
+        amount: r.amount ?? "",
+      })),
       { header: remHeader as string[] },
     );
     XLSX.utils.book_append_sheet(wb, remSheet, "Reminders");
@@ -106,23 +139,34 @@ export function exportFinanceToExcel(opts: {
   if (savings.length) {
     const savHeader: (keyof SavingRow)[] = ["name", "amount", "date"];
     const savSheet = XLSX.utils.json_to_sheet(
-      savings.map((s) => ({ name: s.name, amount: s.amount, date: s.date ?? "" })),
+      savings.map((s) => ({
+        name: s.name,
+        amount: s.amount,
+        date: s.date ?? "",
+      })),
       { header: savHeader as string[] },
     );
     XLSX.utils.book_append_sheet(wb, savSheet, "Savings");
   }
 
   const totalIncome = incomes.reduce((a, b) => a + (Number(b.amount) || 0), 0);
-  const totalExpense = expenses.reduce((a, b) => a + (Number(b.amount) || 0), 0);
+  const totalExpense = expenses.reduce(
+    (a, b) => a + (Number(b.amount) || 0),
+    0,
+  );
   const summary = [
     { field: "Variant", value: variant },
     { field: "Total Incomes", value: totalIncome },
     { field: "Total Expenses", value: totalExpense },
     { field: "Savings", value: totalIncome - totalExpense },
   ];
-  const summarySheet = XLSX.utils.json_to_sheet(summary, { header: ["field", "value"] });
+  const summarySheet = XLSX.utils.json_to_sheet(summary, {
+    header: ["field", "value"],
+  });
   XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
 
-  const fileBase = fileNameBase || `fintrack-${variant.toLowerCase()}-${new Date().toISOString().slice(0, 10)}`;
+  const fileBase =
+    fileNameBase ||
+    `fintrack-${variant.toLowerCase()}-${new Date().toISOString().slice(0, 10)}`;
   XLSX.writeFile(wb, `${fileBase}.xlsx`);
 }

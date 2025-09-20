@@ -22,7 +22,11 @@ export default function Income() {
               e.preventDefault();
               if (!source || !amount) return;
               if (editingId) {
-                await updateIncome(editingId, { source, amount: Number(amount), date }, file);
+                await updateIncome(
+                  editingId,
+                  { source, amount: Number(amount), date },
+                  file,
+                );
               } else {
                 await addIncome({ source, amount: Number(amount), date }, file);
               }
@@ -72,7 +76,18 @@ export default function Income() {
                 {editingId ? "Save Income" : "Add Income"}
               </button>
               {editingId && (
-                <button type="button" onClick={()=>{ setEditingId(null); setSource(""); setAmount(""); setFile(null); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    setSource("");
+                    setAmount("");
+                    setFile(null);
+                  }}
+                  className="px-3 py-2 rounded-md border flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" /> Cancel
+                </button>
               )}
             </div>
           </form>
@@ -101,7 +116,17 @@ export default function Income() {
                 )}
                 {i.id && (
                   <>
-                    <button onClick={()=>{ setEditingId(i.id!); setSource(i.source); setAmount(String(i.amount)); setDate(i.date); setFile(null); }} className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" aria-label="Edit income">
+                    <button
+                      onClick={() => {
+                        setEditingId(i.id!);
+                        setSource(i.source);
+                        setAmount(String(i.amount));
+                        setDate(i.date);
+                        setFile(null);
+                      }}
+                      className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600"
+                      aria-label="Edit income"
+                    >
                       <Pencil className="h-4 w-4" />
                       <span className="sr-only">Edit</span>
                     </button>

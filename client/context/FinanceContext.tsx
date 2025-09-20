@@ -48,9 +48,20 @@ interface FinanceCtx {
   ) => Promise<void>;
   addReminder: (r: Omit<Reminder, "id" | "uid">) => Promise<void>;
   addSaving: (s: Omit<Saving, "id" | "uid">) => Promise<void>;
-  updateIncome: (id: string, i: Omit<Income, "id" | "uid">, file?: File | null) => Promise<void>;
-  updateExpense: (id: string, e: Omit<Expense, "id" | "uid">, file?: File | null) => Promise<void>;
-  updateReminder: (id: string, r: Omit<Reminder, "id" | "uid">) => Promise<void>;
+  updateIncome: (
+    id: string,
+    i: Omit<Income, "id" | "uid">,
+    file?: File | null,
+  ) => Promise<void>;
+  updateExpense: (
+    id: string,
+    e: Omit<Expense, "id" | "uid">,
+    file?: File | null,
+  ) => Promise<void>;
+  updateReminder: (
+    id: string,
+    r: Omit<Reminder, "id" | "uid">,
+  ) => Promise<void>;
   updateSaving: (id: string, s: Omit<Saving, "id" | "uid">) => Promise<void>;
   deleteIncome: (id: string) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
@@ -204,7 +215,10 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     } else {
       const invoiceUrl = file ? URL.createObjectURL(file) : data.invoiceUrl;
-      setIncomes((prev) => [{ ...data, invoiceUrl, id: crypto.randomUUID() }, ...prev]);
+      setIncomes((prev) => [
+        { ...data, invoiceUrl, id: crypto.randomUUID() },
+        ...prev,
+      ]);
     }
   }
 
@@ -232,7 +246,10 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     } else {
       const receiptUrl = file ? URL.createObjectURL(file) : data.receiptUrl;
-      setExpenses((prev) => [{ ...data, receiptUrl, id: crypto.randomUUID() }, ...prev]);
+      setExpenses((prev) => [
+        { ...data, receiptUrl, id: crypto.randomUUID() },
+        ...prev,
+      ]);
     }
   }
 
@@ -270,55 +287,120 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  async function updateIncome(id: string, data: Omit<Income, "id" | "uid">, file?: File | null) {
+  async function updateIncome(
+    id: string,
+    data: Omit<Income, "id" | "uid">,
+    file?: File | null,
+  ) {
     if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase(); if (!svc) return;
+      const svc = ensureFirebase();
+      if (!svc) return;
       const { doc, updateDoc } = await import("firebase/firestore");
-      let fields: any = { source: data.source, amount: data.amount, date: data.date };
+      let fields: any = {
+        source: data.source,
+        amount: data.amount,
+        date: data.date,
+      };
       if (file) {
-        fields.invoiceUrl = await uploadFile(`invoices/${user.uid}/${Date.now()}-${file.name}`, file);
+        fields.invoiceUrl = await uploadFile(
+          `invoices/${user.uid}/${Date.now()}-${file.name}`,
+          file,
+        );
       } else if (data.invoiceUrl) {
         fields.invoiceUrl = data.invoiceUrl;
       }
       await updateDoc(doc(svc.db, "incomes", id), fields);
     } else {
-      setIncomes(prev => prev.map(i => i.id === id ? { ...i, ...data, invoiceUrl: file ? URL.createObjectURL(file) : (data.invoiceUrl ?? i.invoiceUrl) } : i));
+      setIncomes((prev) =>
+        prev.map((i) =>
+          i.id === id
+            ? {
+                ...i,
+                ...data,
+                invoiceUrl: file
+                  ? URL.createObjectURL(file)
+                  : (data.invoiceUrl ?? i.invoiceUrl),
+              }
+            : i,
+        ),
+      );
     }
   }
 
-  async function updateExpense(id: string, data: Omit<Expense, "id" | "uid">, file?: File | null) {
+  async function updateExpense(
+    id: string,
+    data: Omit<Expense, "id" | "uid">,
+    file?: File | null,
+  ) {
     if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase(); if (!svc) return;
+      const svc = ensureFirebase();
+      if (!svc) return;
       const { doc, updateDoc } = await import("firebase/firestore");
-      let fields: any = { category: data.category, amount: data.amount, date: data.date };
+      let fields: any = {
+        category: data.category,
+        amount: data.amount,
+        date: data.date,
+      };
       if (file) {
-        fields.receiptUrl = await uploadFile(`receipts/${user.uid}/${Date.now()}-${file.name}`, file);
+        fields.receiptUrl = await uploadFile(
+          `receipts/${user.uid}/${Date.now()}-${file.name}`,
+          file,
+        );
       } else if (data.receiptUrl) {
         fields.receiptUrl = data.receiptUrl;
       }
       await updateDoc(doc(svc.db, "expenses", id), fields);
     } else {
-      setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...data, receiptUrl: file ? URL.createObjectURL(file) : (data.receiptUrl ?? e.receiptUrl) } : e));
+      setExpenses((prev) =>
+        prev.map((e) =>
+          e.id === id
+            ? {
+                ...e,
+                ...data,
+                receiptUrl: file
+                  ? URL.createObjectURL(file)
+                  : (data.receiptUrl ?? e.receiptUrl),
+              }
+            : e,
+        ),
+      );
     }
   }
 
-  async function updateReminder(id: string, data: Omit<Reminder, "id" | "uid">) {
+  async function updateReminder(
+    id: string,
+    data: Omit<Reminder, "id" | "uid">,
+  ) {
     if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase(); if (!svc) return;
+      const svc = ensureFirebase();
+      if (!svc) return;
       const { doc, updateDoc } = await import("firebase/firestore");
-      await updateDoc(doc(svc.db, "reminders", id), { title: data.title, dueDate: data.dueDate, amount: data.amount ?? null });
+      await updateDoc(doc(svc.db, "reminders", id), {
+        title: data.title,
+        dueDate: data.dueDate,
+        amount: data.amount ?? null,
+      });
     } else {
-      setReminders(prev => prev.map(r => r.id === id ? { ...r, ...data } : r));
+      setReminders((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, ...data } : r)),
+      );
     }
   }
 
   async function updateSaving(id: string, data: Omit<Saving, "id" | "uid">) {
     if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase(); if (!svc) return;
+      const svc = ensureFirebase();
+      if (!svc) return;
       const { doc, updateDoc } = await import("firebase/firestore");
-      await updateDoc(doc(svc.db, "savings", id), { name: data.name, amount: data.amount, date: data.date ?? null });
+      await updateDoc(doc(svc.db, "savings", id), {
+        name: data.name,
+        amount: data.amount,
+        date: data.date ?? null,
+      });
     } else {
-      setSavings(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+      setSavings((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, ...data } : s)),
+      );
     }
   }
 

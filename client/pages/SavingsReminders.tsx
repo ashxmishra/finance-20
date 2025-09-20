@@ -25,7 +25,9 @@ export default function SavingsReminders() {
   );
   const [amount, setAmount] = useState("");
   const [editingSavingId, setEditingSavingId] = useState<string | null>(null);
-  const [editingReminderId, setEditingReminderId] = useState<string | null>(null);
+  const [editingReminderId, setEditingReminderId] = useState<string | null>(
+    null,
+  );
 
   return (
     <AppLayout>
@@ -39,9 +41,17 @@ export default function SavingsReminders() {
                 e.preventDefault();
                 if (!savingName || !savingAmount) return;
                 if (editingSavingId) {
-                  await updateSaving(editingSavingId, { name: savingName, amount: Number(savingAmount), date: savingDate });
+                  await updateSaving(editingSavingId, {
+                    name: savingName,
+                    amount: Number(savingAmount),
+                    date: savingDate,
+                  });
                 } else {
-                  await addSaving({ name: savingName, amount: Number(savingAmount), date: savingDate });
+                  await addSaving({
+                    name: savingName,
+                    amount: Number(savingAmount),
+                    date: savingDate,
+                  });
                 }
                 setSavingName("");
                 setSavingAmount("");
@@ -76,9 +86,21 @@ export default function SavingsReminders() {
               </div>
               <div className="md:col-span-3 flex items-center gap-3">
                 <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
-                  {editingSavingId ? 'Save Saving' : 'Add Saving'}
+                  {editingSavingId ? "Save Saving" : "Add Saving"}
                 </button>
-                {editingSavingId && <button type="button" onClick={()=>{ setEditingSavingId(null); setSavingName(''); setSavingAmount(''); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>}
+                {editingSavingId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingSavingId(null);
+                      setSavingName("");
+                      setSavingAmount("");
+                    }}
+                    className="px-3 py-2 rounded-md border flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" /> Cancel
+                  </button>
+                )}
               </div>
             </form>
           </div>
@@ -96,7 +118,16 @@ export default function SavingsReminders() {
                 </div>
                 {s.id && (
                   <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" onClick={()=>{ setEditingSavingId(s.id!); setSavingName(s.name); setSavingAmount(String(s.amount)); setSavingDate(s.date); }} aria-label="Edit saving">
+                    <button
+                      className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600"
+                      onClick={() => {
+                        setEditingSavingId(s.id!);
+                        setSavingName(s.name);
+                        setSavingAmount(String(s.amount));
+                        setSavingDate(s.date);
+                      }}
+                      aria-label="Edit saving"
+                    >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
@@ -125,9 +156,17 @@ export default function SavingsReminders() {
                 e.preventDefault();
                 if (!title || !dueDate) return;
                 if (editingReminderId) {
-                  await updateReminder(editingReminderId, { title, dueDate, amount: amount ? Number(amount) : undefined });
+                  await updateReminder(editingReminderId, {
+                    title,
+                    dueDate,
+                    amount: amount ? Number(amount) : undefined,
+                  });
                 } else {
-                  await addReminder({ title, dueDate, amount: amount ? Number(amount) : undefined });
+                  await addReminder({
+                    title,
+                    dueDate,
+                    amount: amount ? Number(amount) : undefined,
+                  });
                 }
                 setTitle("");
                 setAmount("");
@@ -162,9 +201,21 @@ export default function SavingsReminders() {
               </div>
               <div className="md:col-span-3 flex items-center gap-3">
                 <button className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow">
-                  {editingReminderId ? 'Save Reminder' : 'Add Reminder'}
+                  {editingReminderId ? "Save Reminder" : "Add Reminder"}
                 </button>
-                {editingReminderId && <button type="button" onClick={()=>{ setEditingReminderId(null); setTitle(''); setAmount(''); }} className="px-3 py-2 rounded-md border flex items-center gap-2"><X className="h-4 w-4"/> Cancel</button>}
+                {editingReminderId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingReminderId(null);
+                      setTitle("");
+                      setAmount("");
+                    }}
+                    className="px-3 py-2 rounded-md border flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" /> Cancel
+                  </button>
+                )}
               </div>
             </form>
           </div>
@@ -185,7 +236,20 @@ export default function SavingsReminders() {
                 </div>
                 {r.id && (
                   <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600" onClick={()=>{ setEditingReminderId(r.id!); setTitle(r.title); setAmount(typeof r.amount!=="undefined"? String(r.amount): ''); setDueDate(r.dueDate); }} aria-label="Edit reminder">
+                    <button
+                      className="p-2 rounded-md hover:bg-emerald-50 text-emerald-600"
+                      onClick={() => {
+                        setEditingReminderId(r.id!);
+                        setTitle(r.title);
+                        setAmount(
+                          typeof r.amount !== "undefined"
+                            ? String(r.amount)
+                            : "",
+                        );
+                        setDueDate(r.dueDate);
+                      }}
+                      aria-label="Edit reminder"
+                    >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button

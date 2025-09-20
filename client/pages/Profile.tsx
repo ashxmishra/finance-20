@@ -42,7 +42,7 @@ export default function Profile() {
   function handleSaveProfile() {
     localStorage.setItem(
       profileKey,
-      JSON.stringify({ name, email, address, phone })
+      JSON.stringify({ name, email, address, phone }),
     );
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
