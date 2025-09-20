@@ -44,8 +44,9 @@ function addHyperlinks(ws: XLSX.WorkSheet, header: string[]) {
     const key = header[c];
     if (!key || !(key.toLowerCase().includes("url") || key.toLowerCase().includes("link"))) continue;
     const col = colToLetter(c);
+    // start from row 2 (index 1) to skip header
     for (let r = range.s.r + 1; r <= range.e.r; r++) {
-      const addr = `${col}${r + 1 - range.s.r}`; // ensure 1-based row number
+      const addr = `${col}${r + 1}`; // convert 0-based row index to 1-based Excel row number
       const cell = ws[addr] as XLSX.CellObject | undefined;
       if (!cell || typeof cell.v !== "string") continue;
       const val = String(cell.v);
