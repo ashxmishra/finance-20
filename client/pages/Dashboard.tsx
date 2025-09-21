@@ -47,17 +47,17 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-4">
         <MetricCard
           title="Total Income"
-          value={`₹${totals.income.toLocaleString()}`}
+          value={totals.income.toLocaleString()}
           accent="green"
         />
         <MetricCard
           title="Total Expenses"
-          value={`₹${totals.expenses.toLocaleString()}`}
+          value={totals.expenses.toLocaleString()}
           accent="red"
         />
         <MetricCard
           title="Savings"
-          value={`₹${totals.savings.toLocaleString()}`}
+          value={totals.savings.toLocaleString()}
           accent={totals.savings >= 0 ? "green" : "red"}
         />
         <MetricCard title="Reminders" value={totals.reminders} accent="amber" />
