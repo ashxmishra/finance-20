@@ -69,7 +69,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       signUpWithEmail: async (email: string, password: string) => {
         const svc = ensureFirebase();
         if (!svc) throw new Error("Firebase not configured");
-        const { createUserWithEmailAndPassword } = await import("firebase/auth");
+        const { createUserWithEmailAndPassword } = await import(
+          "firebase/auth"
+        );
         await createUserWithEmailAndPassword(svc.auth, email, password);
       },
       signOut: async () => {
