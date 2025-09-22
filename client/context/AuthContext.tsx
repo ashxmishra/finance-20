@@ -6,6 +6,8 @@ interface AuthCtx {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   continueAsGuest: () => void;
   isGuest: boolean;
@@ -57,6 +59,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!svc) throw new Error("Firebase not configured");
         const { signInWithPopup } = await import("firebase/auth");
         await signInWithPopup(svc.auth, svc.provider);
+      },
+      signInWithEmail: async (email: string, password: string) => {
+        const svc = ensureFirebase();
+        if (!svc) throw new Error("Firebase not configured");
+        const { signInWithEmailAndPassword } = await import("firebase/auth");
+        await signInWithEmailAndPassword(svc.auth, email, password);
+      },
+      signUpWithEmail: async (email: string, password: string) => {
+        const svc = ensureFirebase();
+        if (!svc) throw new Error("Firebase not configured");
+        const { createUserWithEmailAndPassword } = await import("firebase/auth");
+        await createUserWithEmailAndPassword(svc.auth, email, password);
       },
       signOut: async () => {
         const svc = ensureFirebase();
