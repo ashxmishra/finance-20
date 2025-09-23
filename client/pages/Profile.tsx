@@ -3,6 +3,7 @@ import MetricCard from "@/components/MetricCard";
 import { useAuth } from "@/context/AuthContext";
 import { useFinance } from "@/context/FinanceContext";
 import { useEffect, useState } from "react";
+import { ensureFirebase, isFirebaseEnabled } from "@/lib/firebase";
 
 export default function Profile() {
   const { user, isGuest, signOut } = useAuth();
@@ -14,7 +15,6 @@ export default function Profile() {
   );
   const savingsAmt = totalIncome - totalExpenses;
 
-  const profileKey = `fintrack:profile:${user?.uid || (isGuest ? "guest" : "anon")}`;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
@@ -22,28 +22,45 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem(profileKey);
-    if (raw) {
-      try {
-        const p = JSON.parse(raw);
-        setName(p.name ?? (user?.displayName || ""));
-        setEmail(p.email ?? (user?.email || ""));
-        setAddress(p.address ?? "");
-        setPhone(p.phone ?? "");
-        return;
-      } catch {}
-    }
     setName(user?.displayName || "");
     setEmail(user?.email || "");
-    setAddress("");
-    setPhone("");
-  }, [profileKey, user?.displayName, user?.email]);
+  }, [user?.displayName, user?.email]);
 
-  function handleSaveProfile() {
-    localStorage.setItem(
-      profileKey,
-      JSON.stringify({ name, email, address, phone }),
-    );
+  useEffect(() => {
+    async function load() {
+      if (!isFirebaseEnabled || !user) return;
+      const svc = ensureFirebase(); if (!svc) return;
+      const { doc, onSnapshot } = await import("firebase/firestore");
+      const ref = doc(svc.db, "profiles", user.uid);
+      return onSnapshot(ref, (snap) => {
+        const p = snap.data() as any;
+        if (!p) return;
+        setName(p.name ?? (user.displayName || ""));
+        setEmail(p.email ?? (user.email || ""));
+        setAddress(p.address ?? "");
+        setPhone(p.phone ?? "");
+      });
+    }
+    const unsubPromise = load();
+    return () => {
+      Promise.resolve(unsubPromise).then((u:any)=>{ if (typeof u === 'function') u(); });
+    };
+  }, [user?.uid]);
+
+  async function handleSaveProfile() {
+    if (!isFirebaseEnabled || !user) {
+      alert("Please sign in. Firebase is required to save profile.");
+      return;
+    }
+    const svc = ensureFirebase(); if (!svc) return;
+    const { doc, setDoc, serverTimestamp } = await import("firebase/firestore");
+    await setDoc(doc(svc.db, "profiles", user.uid), {
+      name,
+      email,
+      address,
+      phone,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
@@ -148,7 +165,7 @@ export default function Profile() {
             </div>
             <div className="mt-4 flex items-center gap-3">
               <button
-                onClick={handleSaveProfile}
+                onClick={() => { handleSaveProfile(); }}
                 className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow"
               >
                 Save Profile
