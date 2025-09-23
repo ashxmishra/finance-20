@@ -130,7 +130,9 @@ export default function Login() {
           <button
             onClick={async () => {
               if (!firebaseReady) {
-                alert("Firebase not configured. Guest mode requires anonymous auth.");
+                alert(
+                  "Firebase not configured. Guest mode requires anonymous auth.",
+                );
                 return;
               }
               await continueAsGuest();

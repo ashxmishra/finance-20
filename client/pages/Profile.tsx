@@ -29,7 +29,8 @@ export default function Profile() {
   useEffect(() => {
     async function load() {
       if (!isFirebaseEnabled || !user) return;
-      const svc = ensureFirebase(); if (!svc) return;
+      const svc = ensureFirebase();
+      if (!svc) return;
       const { doc, onSnapshot } = await import("firebase/firestore");
       const ref = doc(svc.db, "profiles", user.uid);
       return onSnapshot(ref, (snap) => {
@@ -43,7 +44,9 @@ export default function Profile() {
     }
     const unsubPromise = load();
     return () => {
-      Promise.resolve(unsubPromise).then((u:any)=>{ if (typeof u === 'function') u(); });
+      Promise.resolve(unsubPromise).then((u: any) => {
+        if (typeof u === "function") u();
+      });
     };
   }, [user?.uid]);
 
@@ -52,15 +55,20 @@ export default function Profile() {
       alert("Please sign in. Firebase is required to save profile.");
       return;
     }
-    const svc = ensureFirebase(); if (!svc) return;
+    const svc = ensureFirebase();
+    if (!svc) return;
     const { doc, setDoc, serverTimestamp } = await import("firebase/firestore");
-    await setDoc(doc(svc.db, "profiles", user.uid), {
-      name,
-      email,
-      address,
-      phone,
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
+    await setDoc(
+      doc(svc.db, "profiles", user.uid),
+      {
+        name,
+        email,
+        address,
+        phone,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   }
@@ -165,7 +173,9 @@ export default function Profile() {
             </div>
             <div className="mt-4 flex items-center gap-3">
               <button
-                onClick={() => { handleSaveProfile(); }}
+                onClick={() => {
+                  handleSaveProfile();
+                }}
                 className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-accent text-primary-foreground shadow"
               >
                 Save Profile

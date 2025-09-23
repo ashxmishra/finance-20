@@ -51,7 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       isGuest,
       continueAsGuest: async () => {
         if (!isFirebaseEnabled) {
-          alert("Firebase not configured. Please set VITE_FIREBASE_* to use guest mode (anonymous auth).");
+          alert(
+            "Firebase not configured. Please set VITE_FIREBASE_* to use guest mode (anonymous auth).",
+          );
           return;
         }
         const svc = ensureFirebase();

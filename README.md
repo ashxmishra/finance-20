@@ -114,19 +114,19 @@ public/
 
 The app requires Firebase for auth, data, and file storage (free plan works):
 
-1) Create a Firebase project at console.firebase.google.com
-2) Authentication → Sign‑in method
+1. Create a Firebase project at console.firebase.google.com
+2. Authentication → Sign‑in method
    - Enable Email/Password
    - Enable Google (optional)
    - Enable Anonymous (for Guest)
    - Add your app’s domain in Authorized domains
-3) Firestore
+3. Firestore
    - Create a database (Production or Test mode)
-4) Storage
+4. Storage
    - Create a default bucket
-5) Project settings → General → Your apps → Web → Register app
+5. Project settings → General → Your apps → Web → Register app
    - Copy Web SDK config
-6) Set Vite env variables (all required):
+6. Set Vite env variables (all required):
    - VITE_FIREBASE_API_KEY
    - VITE_FIREBASE_AUTH_DOMAIN
    - VITE_FIREBASE_PROJECT_ID
@@ -141,6 +141,7 @@ In Builder.io, prefer using [Open Settings](#open-settings) to set env vars inst
 Adjust to your needs, but the app assumes user‑scoped documents with a uid field:
 
 Firestore (rules v2 example):
+
 ```
 rules_version = '2';
 service cloud.firestore {
@@ -177,6 +178,7 @@ service cloud.firestore {
 ```
 
 Storage (restrict to signed‑in users):
+
 ```
 rules_version = '2';
 service firebase.storage {
@@ -196,6 +198,7 @@ service firebase.storage {
 ## App Architecture
 
 ### Routing & Pages
+
 - Dashboard: totals and charts
 - Income / Expenses: CRUD with file upload
 - Tax: filter data and export Excel (ITR/GST)
@@ -203,6 +206,7 @@ service firebase.storage {
 - Login: Email/Password Sign In/Up, Google, Anonymous guest
 
 ### State & Data Flow
+
 - AuthContext.tsx: Firebase auth state + methods
   - signUpWithEmail, signInWithEmail, signInWithGoogle, continueAsGuest (anonymous auth)
 - FinanceContext.tsx: Firestore subscriptions per user + CRUD
@@ -211,6 +215,7 @@ service firebase.storage {
 - Profile.tsx: Firestore document profiles/{uid}
 
 ### Data Models
+
 - Income: { id, uid, date, source, amount, invoiceUrl? }
 - Expense: { id, uid, date, category, amount, receiptUrl? }
 - Reminder: { id, uid, title, dueDate, amount? }
@@ -218,6 +223,7 @@ service firebase.storage {
 - Profile: { name, email, address, phone, updatedAt }
 
 ### File Storage Layout
+
 - Invoices: invoices/{uid}/{timestamp}-{filename}
 - Receipts: receipts/{uid}/{timestamp}-{filename}
 
@@ -272,7 +278,7 @@ Location: Tax.tsx (UI) + exportToExcel.ts (logic)
 ## Troubleshooting & FAQ
 
 - Buttons disabled on Login
-  - Ensure ALL VITE_FIREBASE_* are set and providers (Email/Password, Google, Anonymous) are enabled
+  - Ensure ALL VITE*FIREBASE*\* are set and providers (Email/Password, Google, Anonymous) are enabled
   - Add domain under Authorized domains
 - “Authentication failed” on Sign Up/In
   - Password ≥ 6 chars; check provider settings and domain authorization
@@ -297,6 +303,7 @@ Location: Tax.tsx (UI) + exportToExcel.ts (logic)
 ## Appendix A: Environment Variables
 
 Set all:
+
 - VITE_FIREBASE_API_KEY
 - VITE_FIREBASE_AUTH_DOMAIN
 - VITE_FIREBASE_PROJECT_ID
