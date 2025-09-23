@@ -128,8 +128,12 @@ export default function Login() {
             </div>
           )}
           <button
-            onClick={() => {
-              continueAsGuest();
+            onClick={async () => {
+              if (!firebaseReady) {
+                alert("Firebase not configured. Guest mode requires anonymous auth.");
+                return;
+              }
+              await continueAsGuest();
               navigate("/dashboard");
             }}
             className="w-full px-4 py-2 rounded-lg border"
