@@ -49,10 +49,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       loading,
       firebaseReady: isFirebaseEnabled,
       isGuest,
-      continueAsGuest: () => {
+      continueAsGuest: async () => {
+        if (!isFirebaseEnabled) {
+          alert("Firebase not configured. Please set VITE_FIREBASE_* to use guest mode (anonymous auth).");
+          return;
+        }
+        const svc = ensureFirebase();
+        if (!svc) return;
+        const { signInAnonymously } = await import("firebase/auth");
+        await signInAnonymously(svc.auth);
         setGuest(true);
-        setUser(null);
-        setLoading(false);
       },
       signInWithGoogle: async () => {
         const svc = ensureFirebase();
