@@ -71,51 +71,26 @@ interface FinanceCtx {
 
 const Ctx = createContext<FinanceCtx | null>(null);
 
-function lsKey(uid: string) {
-  return `fintrack:${uid || "guest"}`;
-}
-
 export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user, isGuest } = useAuth();
-  const storageKey = useMemo(
-    () => lsKey(user?.uid || (isGuest ? "guest" : "anon")),
-    [user?.uid, isGuest],
-  );
+  const { user } = useAuth();
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [savings, setSavings] = useState<Saving[]>([]);
 
-  // Load from localStorage immediately to avoid flicker
-  useEffect(() => {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      setIncomes(parsed.incomes || []);
-      setExpenses(parsed.expenses || []);
-      setReminders(parsed.reminders || []);
-      setSavings(parsed.savings || []);
-    } else {
-      setIncomes([]);
-      setExpenses([]);
-      setReminders([]);
-      setSavings([]);
-    }
-  }, [storageKey]);
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    const data = JSON.stringify({ incomes, expenses, reminders, savings });
-    localStorage.setItem(storageKey, data);
-  }, [incomes, expenses, reminders, savings, storageKey]);
-
-  // Firestore realtime subscription when logged in
+  // Firestore realtime subscription
   useEffect(() => {
     let unsubscribers: Array<() => void> = [];
     async function sub() {
-      if (!isFirebaseEnabled || !user) return;
+      if (!isFirebaseEnabled || !user) {
+        setIncomes([]);
+        setExpenses([]);
+        setReminders([]);
+        setSavings([]);
+        return;
+      }
       const svc = ensureFirebase();
       if (!svc) return;
       const { collection, onSnapshot, query, where, orderBy } = await import(
@@ -195,96 +170,88 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
     data: Omit<Income, "id" | "uid">,
     file?: File | null,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      let invoiceUrl: string | undefined = data.invoiceUrl;
-      if (file)
-        invoiceUrl = await uploadFile(
-          `invoices/${user.uid}/${Date.now()}-${file.name}`,
-          file,
-        );
-      const { addDoc, collection, serverTimestamp } = await import(
-        "firebase/firestore"
-      );
-      await addDoc(collection(svc.db, "incomes"), {
-        ...data,
-        invoiceUrl,
-        uid: user.uid,
-        createdAt: serverTimestamp(),
-      });
-    } else {
-      const invoiceUrl = file ? URL.createObjectURL(file) : data.invoiceUrl;
-      setIncomes((prev) => [
-        { ...data, invoiceUrl, id: crypto.randomUUID() },
-        ...prev,
-      ]);
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    let invoiceUrl: string | undefined = data.invoiceUrl;
+    if (file)
+      invoiceUrl = await uploadFile(
+        `invoices/${user.uid}/${Date.now()}-${file.name}`,
+        file,
+      );
+    const { addDoc, collection, serverTimestamp } = await import(
+      "firebase/firestore"
+    );
+    await addDoc(collection(svc.db, "incomes"), {
+      ...data,
+      invoiceUrl,
+      uid: user.uid,
+      createdAt: serverTimestamp(),
+    });
   }
 
   async function addExpense(
     data: Omit<Expense, "id" | "uid">,
     file?: File | null,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      let receiptUrl: string | undefined = data.receiptUrl;
-      if (file)
-        receiptUrl = await uploadFile(
-          `receipts/${user.uid}/${Date.now()}-${file.name}`,
-          file,
-        );
-      const { addDoc, collection, serverTimestamp } = await import(
-        "firebase/firestore"
-      );
-      await addDoc(collection(svc.db, "expenses"), {
-        ...data,
-        receiptUrl,
-        uid: user.uid,
-        createdAt: serverTimestamp(),
-      });
-    } else {
-      const receiptUrl = file ? URL.createObjectURL(file) : data.receiptUrl;
-      setExpenses((prev) => [
-        { ...data, receiptUrl, id: crypto.randomUUID() },
-        ...prev,
-      ]);
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    let receiptUrl: string | undefined = data.receiptUrl;
+    if (file)
+      receiptUrl = await uploadFile(
+        `receipts/${user.uid}/${Date.now()}-${file.name}`,
+        file,
+      );
+    const { addDoc, collection, serverTimestamp } = await import(
+      "firebase/firestore"
+    );
+    await addDoc(collection(svc.db, "expenses"), {
+      ...data,
+      receiptUrl,
+      uid: user.uid,
+      createdAt: serverTimestamp(),
+    });
   }
 
   async function addReminder(data: Omit<Reminder, "id" | "uid">) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { addDoc, collection, serverTimestamp } = await import(
-        "firebase/firestore"
-      );
-      await addDoc(collection(svc.db, "reminders"), {
-        ...data,
-        uid: user.uid,
-        createdAt: serverTimestamp(),
-      });
-    } else {
-      setReminders((prev) => [{ ...data, id: crypto.randomUUID() }, ...prev]);
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { addDoc, collection, serverTimestamp } = await import(
+      "firebase/firestore"
+    );
+    await addDoc(collection(svc.db, "reminders"), {
+      ...data,
+      uid: user.uid,
+      createdAt: serverTimestamp(),
+    });
   }
 
   async function addSaving(data: Omit<Saving, "id" | "uid">) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { addDoc, collection, serverTimestamp } = await import(
-        "firebase/firestore"
-      );
-      await addDoc(collection(svc.db, "savings"), {
-        ...data,
-        uid: user.uid,
-        createdAt: serverTimestamp(),
-      });
-    } else {
-      setSavings((prev) => [{ ...data, id: crypto.randomUUID() }, ...prev]);
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { addDoc, collection, serverTimestamp } = await import(
+      "firebase/firestore"
+    );
+    await addDoc(collection(svc.db, "savings"), {
+      ...data,
+      uid: user.uid,
+      createdAt: serverTimestamp(),
+    });
   }
 
   async function updateIncome(
@@ -292,39 +259,27 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
     data: Omit<Income, "id" | "uid">,
     file?: File | null,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { doc, updateDoc } = await import("firebase/firestore");
-      let fields: any = {
-        source: data.source,
-        amount: data.amount,
-        date: data.date,
-      };
-      if (file) {
-        fields.invoiceUrl = await uploadFile(
-          `invoices/${user.uid}/${Date.now()}-${file.name}`,
-          file,
-        );
-      } else if (data.invoiceUrl) {
-        fields.invoiceUrl = data.invoiceUrl;
-      }
-      await updateDoc(doc(svc.db, "incomes", id), fields);
-    } else {
-      setIncomes((prev) =>
-        prev.map((i) =>
-          i.id === id
-            ? {
-                ...i,
-                ...data,
-                invoiceUrl: file
-                  ? URL.createObjectURL(file)
-                  : (data.invoiceUrl ?? i.invoiceUrl),
-              }
-            : i,
-        ),
-      );
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { doc, updateDoc } = await import("firebase/firestore");
+    let fields: any = {
+      source: data.source,
+      amount: data.amount,
+      date: data.date,
+    };
+    if (file) {
+      fields.invoiceUrl = await uploadFile(
+        `invoices/${user.uid}/${Date.now()}-${file.name}`,
+        file,
+      );
+    } else if (data.invoiceUrl) {
+      fields.invoiceUrl = data.invoiceUrl;
+    }
+    await updateDoc(doc(svc.db, "incomes", id), fields);
   }
 
   async function updateExpense(
@@ -332,96 +287,74 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({
     data: Omit<Expense, "id" | "uid">,
     file?: File | null,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { doc, updateDoc } = await import("firebase/firestore");
-      let fields: any = {
-        category: data.category,
-        amount: data.amount,
-        date: data.date,
-      };
-      if (file) {
-        fields.receiptUrl = await uploadFile(
-          `receipts/${user.uid}/${Date.now()}-${file.name}`,
-          file,
-        );
-      } else if (data.receiptUrl) {
-        fields.receiptUrl = data.receiptUrl;
-      }
-      await updateDoc(doc(svc.db, "expenses", id), fields);
-    } else {
-      setExpenses((prev) =>
-        prev.map((e) =>
-          e.id === id
-            ? {
-                ...e,
-                ...data,
-                receiptUrl: file
-                  ? URL.createObjectURL(file)
-                  : (data.receiptUrl ?? e.receiptUrl),
-              }
-            : e,
-        ),
-      );
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { doc, updateDoc } = await import("firebase/firestore");
+    let fields: any = {
+      category: data.category,
+      amount: data.amount,
+      date: data.date,
+    };
+    if (file) {
+      fields.receiptUrl = await uploadFile(
+        `receipts/${user.uid}/${Date.now()}-${file.name}`,
+        file,
+      );
+    } else if (data.receiptUrl) {
+      fields.receiptUrl = data.receiptUrl;
+    }
+    await updateDoc(doc(svc.db, "expenses", id), fields);
   }
 
   async function updateReminder(
     id: string,
     data: Omit<Reminder, "id" | "uid">,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { doc, updateDoc } = await import("firebase/firestore");
-      await updateDoc(doc(svc.db, "reminders", id), {
-        title: data.title,
-        dueDate: data.dueDate,
-        amount: data.amount ?? null,
-      });
-    } else {
-      setReminders((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, ...data } : r)),
-      );
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { doc, updateDoc } = await import("firebase/firestore");
+    await updateDoc(doc(svc.db, "reminders", id), {
+      title: data.title,
+      dueDate: data.dueDate,
+      amount: data.amount ?? null,
+    });
   }
 
   async function updateSaving(id: string, data: Omit<Saving, "id" | "uid">) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { doc, updateDoc } = await import("firebase/firestore");
-      await updateDoc(doc(svc.db, "savings", id), {
-        name: data.name,
-        amount: data.amount,
-        date: data.date ?? null,
-      });
-    } else {
-      setSavings((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, ...data } : s)),
-      );
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { doc, updateDoc } = await import("firebase/firestore");
+    await updateDoc(doc(svc.db, "savings", id), {
+      name: data.name,
+      amount: data.amount,
+      date: data.date ?? null,
+    });
   }
 
   async function del(
     col: "incomes" | "expenses" | "reminders" | "savings",
     id: string,
   ) {
-    if (isFirebaseEnabled && user) {
-      const svc = ensureFirebase();
-      if (!svc) return;
-      const { doc, deleteDoc } = await import("firebase/firestore");
-      await deleteDoc(doc(svc.db, col, id));
+    if (!isFirebaseEnabled || !user) {
+      alert("Firebase not configured or user not signed in.");
+      return;
     }
-    if (col === "incomes")
-      setIncomes((prev) => prev.filter((i) => i.id !== id));
-    if (col === "expenses")
-      setExpenses((prev) => prev.filter((i) => i.id !== id));
-    if (col === "reminders")
-      setReminders((prev) => prev.filter((i) => i.id !== id));
-    if (col === "savings")
-      setSavings((prev) => prev.filter((i) => i.id !== id));
+    const svc = ensureFirebase();
+    if (!svc) return;
+    const { doc, deleteDoc } = await import("firebase/firestore");
+    await deleteDoc(doc(svc.db, col, id));
   }
 
   const value = useMemo<FinanceCtx>(
